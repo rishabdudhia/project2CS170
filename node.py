@@ -12,6 +12,7 @@ class Node:
         self.remainingFeatures.sort()
         self.evaluation = self.evalFunc(self.currFeatures)
         self.children = []
+        self.minimized = 0
         if type(parent) == Node:
             self.parent = [parent]
         elif parent == 0:
