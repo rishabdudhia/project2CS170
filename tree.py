@@ -5,10 +5,11 @@ from queue import Queue
 class Tree:
     
     def expandNode(self):
-        if self.toExpand.qsize() == 0:
+        if len(self.toExpand) == 0:
             return
 
-        node: Node = self.toExpand.get()
+        node: Node = self.toExpand[0]
+        del self.toExpand[0]
         # for i in node.children:
         #     print("in here")
         #     print(i.currFeatures)
@@ -22,96 +23,47 @@ class Tree:
                 for j in range(len(node.remainingFeatures)):
                     if j == i: continue
                     rem.append(node.remainingFeatures[j])
-                newNode = Node(curr, rem, 0)
+                newNode = Node(curr, rem, node)
+                found = 0
+                for j in range(len(self.tree)):
+                    if self.tree[j].currFeatures == newNode.currFeatures and self.tree[j].remainingFeatures == newNode.remainingFeatures:
+                        found = 1
+                        node.children.append(self.tree[j])
+                        self.tree[j].parent.append(node)
+                        break
+                if found == 0:
+                    for j in range(len(self.toExpand)):
+                        if self.toExpand[j].currFeatures == newNode.currFeatures and self.toExpand[j].remainingFeatures == newNode.remainingFeatures:
+                            found = 1
+                            node.children.append(self.toExpand[j])
+                            self.toExpand[j].parent.append(node)
+                if found == 0:
+                    node.children.append(newNode)
+                    self.toExpand.append(newNode)
                 if newNode.depth > self.depth:
                     self.depth = newNode.depth
-                node.children.append(newNode)
-                newNode.parent.append(node)
-                self.toExpand.put(newNode)
+                
 
         # for i in node.children:
         #     print(i.currFeatures)  
-        if self.temproot == None and (len(node.parent) == 0):
-            self.temproot = node      
-        self.temptree.append(node)
+        if self.root == None and (len(node.parent) == 0):
+            self.root = node      
+        self.tree.append(node)
         self.expandNode()
         return
-
-        
-    def minimizeTree(self):
-        i = 0
-        count = 0
-        while i < len(self.temptree):
-            if self.temptree[i].minimized == 1: 
-                count += 1
-                i += 1
-                continue
-            for j in range(i+1,len(self.temptree)):
-                # if i == j: continue
-                if self.temptree[j].minimized == 1: #unnecessary i think
-                        continue
-                if self.temptree[i].depth == self.temptree[j].depth and self.temptree[i].currFeatures == self.temptree[j].currFeatures and self.temptree[i].remainingFeatures == self.temptree[j].remainingFeatures:
-                    for k in self.temptree[j].children:
-                        if (k in self.temptree[i].children) and (k.minimized == 0):
-                            continue
-                        else:
-                            self.temptree[i].children.append(k)
-                    for k in self.temptree[j].parent:
-                        if (k in self.temptree[i].parent) and (k.minimized == 0):
-                            continue
-                        else:
-                            self.temptree[i].parent.append(k)
-                    self.temptree[j].minimized = 1
-            
-            self.tree.append(self.temptree[i])
-            i += 1
-
-    def cleanTree(self):
-        for i in self.tree:
-            j = 0
-            while j < len(i.parent):
-                k = j + 1
-                while k < len(i.parent):
-                    if i.parent[j].currFeatures == i.parent[k].currFeatures:
-                        del i.parent[j]
-                        continue
-                    k += 1
-                j += 1
-            j = 0
-            while j < len(i.children):
-                k = j + 1
-                while k < len(i.children):
-                    if i.children[j].currFeatures == i.children[k].currFeatures:
-                        del i.children[j]
-                        continue
-                    k += 1
-                j += 1
-        j = 0
-        while j < len(self.tree[-1].parent):
-            k = j + 1
-            while k < len(self.tree[-1].parent):
-                if self.tree[-1].parent[j].currFeatures == self.tree[-1].parent[k].currFeatures:
-                    del self.tree[-1].parent[j]
-                    continue
-                k += 1
-            j += 1
         
             
 
     def __init__(self, features: list):
         self.features = features
         self.selected = []
-        self.temptree = []
-        self.toExpand = Queue()
-        empty = []
-        self.temproot = Node(empty, self.features, 0)
+        self.toExpand = []
         self.depth = 0
-        self.toExpand.put(self.temproot)
-        self.expandNode()
         self.tree = []
-        self.minimizeTree()
-        self.cleanTree()
-        self.root = self.tree[0]
+        self.root = None
+        initial = Node([], self.features, 0)
+        self.toExpand.append(initial)
+        self.expandNode()
         self.end = self.tree[-1]
 
     def printTree(self):
@@ -127,10 +79,10 @@ class Tree:
                 print("node")
                 print ("    f: " + j.currFeatures.__str__())
                 print ("    r: " + j.remainingFeatures.__str__())
-                for a in j.parent:
-                    print("    p: " + a.currFeatures.__str__())
-                    for b in a.children:
-                        print("        pc: " + b.currFeatures.__str__())
+                # for a in j.parent:
+                #     print("    p: " + a.currFeatures.__str__())
+                #     for b in a.children:
+                #         print("        pc: " + b.currFeatures.__str__())
                 for a in j.children:
                     print("    c: " + a.currFeatures.__str__())
                     for b in a.parent:
