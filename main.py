@@ -1,6 +1,6 @@
 from tree import Tree
 
-print ("Welcom to Rishab Dudhia's Feature Search Algorithm\n")
+print ("Welcome to Rishab Dudhia's Feature Search Algorithm\n")
 print ("Please enter the total number of features: ")
 numFeatures = input()
 print("\nType the number of the algorithm you wish to run:")
