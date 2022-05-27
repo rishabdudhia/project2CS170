@@ -79,10 +79,10 @@ class Tree:
                 print("node")
                 print ("    f: " + j.currFeatures.__str__())
                 print ("    r: " + j.remainingFeatures.__str__())
-                # for a in j.parent:
-                #     print("    p: " + a.currFeatures.__str__())
-                #     for b in a.children:
-                #         print("        pc: " + b.currFeatures.__str__())
+                for a in j.parent:
+                    print("    p: " + a.currFeatures.__str__())
+                    for b in a.children:
+                        print("        pc: " + b.currFeatures.__str__())
                 for a in j.children:
                     print("    c: " + a.currFeatures.__str__())
                     for b in a.parent:
@@ -90,16 +90,6 @@ class Tree:
 
             k += 1
 
-        # q = Queue()
-        # q.put(self.root)
-        # node: Node = None
-        # while q.qsize() > 0:
-        #     node = q.get()
-        #     print("curr: " + node.currFeatures.__str__())
-        #     for i in node.children:
-        #         print("child: " + i.currFeatures.__str__())
-        #         q.put(i)
-            
     def ForwardSelection(self):
         highest = -1
         selected = {}
@@ -123,8 +113,7 @@ class Tree:
                 highest = maxVal
             print("\n")
             if maxVal < highest:
-                print ("(Warning, selecting best feature set, " + maxCurr.__str__() + ", with accuracy " + str(maxVal) + "%" + " will decrease accuracy!)")
-                return (highest, selected[highest])
+                print ("(Warning, selecting best feature set, " + maxCurr.__str__() + ", with accuracy " + str(maxVal) + "%" + " will decrease accuracy from " + str(highest) + "%!)")
             print("Feature set " + maxCurr.__str__() + " was best, accuracy is " + str(maxVal) + "%\n")    
             node = maxNode
 
@@ -153,8 +142,7 @@ class Tree:
                 highest = maxVal
             print("\n")
             if maxVal < highest:
-                print ("(Warning, selecting best feature set, " + maxCurr.__str__() + ", with accuracy " + str(maxVal) + "%" + " will decrease accuracy!)")
-                return (highest, selected[highest])
+                print ("(Warning, selecting best feature set, " + maxCurr.__str__() + ", with accuracy " + str(maxVal) + "%" + " will decrease accuracy from " + str(highest) + "%!)")
             print("Feature set " + maxCurr.__str__() + " was best, accuracy is " + str(maxVal) + "%\n")    
             node = maxNode
 
