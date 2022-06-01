@@ -1,4 +1,5 @@
 from platform import node
+from data import Data
 from node import Node
 from queue import Queue
 
@@ -23,7 +24,7 @@ class Tree:
                 for j in range(len(node.remainingFeatures)):
                     if j == i: continue
                     rem.append(node.remainingFeatures[j])
-                newNode = Node(curr, rem, node)
+                newNode = Node(curr, rem, node, self.data)
                 found = 0
                 for j in range(len(self.tree)):
                     if self.tree[j].currFeatures == newNode.currFeatures and self.tree[j].remainingFeatures == newNode.remainingFeatures:
@@ -54,14 +55,15 @@ class Tree:
         
             
 
-    def __init__(self, features: list):
+    def __init__(self, features: list, data: Data):
+        self.data = data
         self.features = features
         self.selected = []
         self.toExpand = []
         self.depth = 0
         self.tree = []
         self.root = None
-        initial = Node([], self.features, 0)
+        initial = Node([], self.features, 0, self.data)
         self.toExpand.append(initial)
         self.expandNode()
         self.end = self.tree[-1]
