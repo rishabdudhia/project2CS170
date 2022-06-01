@@ -5,17 +5,16 @@ from validator import Validator
 
 class Node:
 
-    def evalFunc(self, currList: list, data: Data):
-        nearestNeighbor = Classifier(currList)
-        v = Validator(currList, nearestNeighbor, data)
-        return v.accuracy
+    def evalFunc(self, currList: list, validator: Validator):
+        return validator.validate(currList)
+        # return rm.randint(0,100)
 
-    def __init__(self, current: list, rem: list, parent, data: Data):
+    def __init__(self, current: list, rem: list, parent, validator: Validator):
         self.currFeatures = current
         self.currFeatures.sort()
         self.remainingFeatures = rem
         self.remainingFeatures.sort()
-        self.evaluation = self.evalFunc(self.currFeatures, data)
+        self.evaluation = self.evalFunc(self.currFeatures, validator)
         self.children = []
         self.minimized = 0
         if type(parent) == Node:

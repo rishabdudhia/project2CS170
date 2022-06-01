@@ -4,34 +4,32 @@ from data import Data
 
 class Classifier: 
 
-    def __init__(self, currFeatures: int):
+    def __init__(self, data: Data):
+        self.allData = data
         self.trainingData = []
-        self.features = currFeatures
+        
     
-    def train(self, trainingData: list):
-        self.trainingData = trainingData
+    def train(self, leaveOut: int):
+        self.trainingData.clear()
+        for i in range(len(self.allData.data)):
+            if i == leaveOut: continue
+            self.trainingData.append(self.allData.data[i])
 
-    def test(self, instanceFeatures: list, currID: int):
+    def test(self, instanceFeatures: list, currFeatures: list, currID: int):
         # distanceToInstance = []
-        print(self.features)
+        # print(self.features)
         minDist = inf
         classMin = 0.0
 
         i = 0
         while i < (len(self.trainingData) ):
             distance = 0.0
-            for j in range(len(self.features)):
-                distance += (abs(instanceFeatures[self.features[j]] - self.trainingData[i][self.features[j]+1])) ** 2
+            for j in range(len(currFeatures)):
+                distance += (abs(self.allData.data[currID][currFeatures[j]+1] - self.trainingData[i][currFeatures[j]+1])) ** 2
             distance = abs(sqrt(distance))
             # distanceToInstance.append(distance)
             if distance < minDist:
                 minDist = distance
                 classMin = self.trainingData[i][0]
             i += 1
-        
         return classMin
-
-
-    
-    def clear(self):
-        self.trainingData.clear()

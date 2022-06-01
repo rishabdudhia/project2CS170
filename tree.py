@@ -1,7 +1,9 @@
-from platform import node
+from classifier import Classifier
 from data import Data
 from node import Node
 from queue import Queue
+
+from validator import Validator
 
 class Tree:
     
@@ -24,7 +26,7 @@ class Tree:
                 for j in range(len(node.remainingFeatures)):
                     if j == i: continue
                     rem.append(node.remainingFeatures[j])
-                newNode = Node(curr, rem, node, self.data)
+                newNode = Node(curr, rem, node, self.validator)
                 found = 0
                 for j in range(len(self.tree)):
                     if self.tree[j].currFeatures == newNode.currFeatures and self.tree[j].remainingFeatures == newNode.remainingFeatures:
@@ -55,15 +57,16 @@ class Tree:
         
             
 
-    def __init__(self, features: list, data: Data):
-        self.data = data
+    def __init__(self, features: list, validator: Validator):
+        # self.data = data
+        self.validator = validator
         self.features = features
         self.selected = []
         self.toExpand = []
         self.depth = 0
         self.tree = []
         self.root = None
-        initial = Node([], self.features, 0, self.data)
+        initial = Node([], self.features, 0, self.validator)
         self.toExpand.append(initial)
         self.expandNode()
         self.end = self.tree[-1]
