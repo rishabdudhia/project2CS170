@@ -5,17 +5,7 @@ class Validator:
 
     def __init__(self, nearestNeighbor: Classifier, data: Data):
         self.data = data.data
-        # self.currFeatures = featureList
-        # self.numInstances = len(self.data)
         self.classifier = nearestNeighbor
-        # self.leaveOut = [] #ith element is list without ith instance from self.data
-        # for i in range(len(self.data)):
-        #     temp = []
-        #     for j in range(len(self.data)):
-        #         if i == j: continue
-        #         temp.append(self.data[j])
-        #     self.leaveOut.append(temp)
-        # self.accuracy = self.validate()
 
     def validate(self, currFeatures: list):
         numCorrect = 0
@@ -28,7 +18,7 @@ class Validator:
                     iClass = self.data[i][j]
                     continue
                 iFeatures.append(self.data[i][j])
-            predictedClass = self.classifier.test(iFeatures, currFeatures, i)
+            predictedClass = self.classifier.test(iFeatures, currFeatures)
             if iClass == predictedClass:
                 numCorrect += 1
         accuracy = numCorrect / len(self.data)

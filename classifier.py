@@ -15,9 +15,7 @@ class Classifier:
             if i == leaveOut: continue
             self.trainingData.append(self.allData.data[i])
 
-    def test(self, instanceFeatures: list, currFeatures: list, currID: int):
-        # distanceToInstance = []
-        # print(self.features)
+    def test(self, instanceFeatures: list, currFeatures: list):
         minDist = inf
         classMin = 0.0
 
@@ -25,9 +23,8 @@ class Classifier:
         while i < (len(self.trainingData) ):
             distance = 0.0
             for j in range(len(currFeatures)):
-                distance += (abs(self.allData.data[currID][currFeatures[j]+1] - self.trainingData[i][currFeatures[j]+1])) ** 2
+                distance += (abs(instanceFeatures[currFeatures[j]] - self.trainingData[i][currFeatures[j]+1])) ** 2
             distance = abs(sqrt(distance))
-            # distanceToInstance.append(distance)
             if distance < minDist:
                 minDist = distance
                 classMin = self.trainingData[i][0]
