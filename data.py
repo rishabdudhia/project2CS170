@@ -70,3 +70,16 @@ class Data:
         print("Please wait while I normalize the data...")
         self.normalize()
         print("Done!")
+        self.defaultRate = -1
+        c1 = 0
+        c2 = 0
+        for i in range(len(self.data)):
+            if self.data[i][0] == 1.0:
+                c1 += 1
+            else:
+                c2+= 1
+        
+        if c1 > c2:
+            self.defaultRate = c1 / len(self.data)
+        else:
+            self.defaultRate = c2 / len(self.data)

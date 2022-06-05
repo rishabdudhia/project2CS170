@@ -6,7 +6,9 @@ from validator import Validator
 class Node:
 
     def evalFunc(self, currList: list, validator: Validator):
-        return validator.validate(currList)
+        if len(currList) == 0:
+            return validator.classifier.allData.defaultRate * 100
+        return validator.validate(currList) * 100
         # return rm.randint(0,100)
 
     def __init__(self, current: list, rem: list, parent, validator: Validator):

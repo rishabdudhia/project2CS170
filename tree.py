@@ -13,9 +13,7 @@ class Tree:
 
         node: Node = self.toExpand[0]
         del self.toExpand[0]
-        # for i in node.children:
-        #     print("in here")
-        #     print(i.currFeatures)
+        
         if len(node.remainingFeatures) != 0:
             for i in range(len(node.remainingFeatures)):
                 curr = []
@@ -47,8 +45,6 @@ class Tree:
                     self.depth = newNode.depth
                 
 
-        # for i in node.children:
-        #     print(i.currFeatures)  
         if self.root == None and (len(node.parent) == 0):
             self.root = node      
         self.tree.append(node)
@@ -58,18 +54,79 @@ class Tree:
             
 
     def __init__(self, features: list, validator: Validator):
-        # self.data = data
         self.validator = validator
         self.features = features
-        self.selected = []
-        self.toExpand = []
+        # self.selected = []
+        # self.toExpand = []
         self.depth = 0
-        self.tree = []
-        self.root = None
+        # self.tree = []
+        # self.root = None
         initial = Node([], self.features, 0, self.validator)
-        self.toExpand.append(initial)
-        self.expandNode()
-        self.end = self.tree[-1]
+        # self.toExpand.append(initial)
+        # self.expandNode()
+        # self.end = self.tree[-1]
+        self.greedyBuild(initial)
+
+    def greedyBuild(self, node: Node):
+        currAccuracy = node.evaluation
+        print("Using no features, ie " + node.currFeatures.__str__() + ", accuracy is " + str(currAccuracy) + "%\n")
+        while len(node.remainingFeatures) != 0:
+            highestAccuracy = -1
+            nextNode: Node = None
+            for i in range(len(node.remainingFeatures)):
+                curr = []
+                for j in node.currFeatures:
+                    curr.append(j)
+                curr.append(node.remainingFeatures[i])
+                rem = []
+                for j in range(len(node.remainingFeatures)):
+                    if j == i: continue
+                    rem.append(node.remainingFeatures[j])
+                newNode = Node(curr, rem, node, self.validator)
+                f = []
+                for j in range(len(newNode.currFeatures)):
+                    f.append(newNode.currFeatures[j]+1)
+                print("Using feature(s) " + f.__str__() + " accuracy is " + str(newNode.evaluation) + "%")
+                if newNode.evaluation > highestAccuracy:
+                    highestAccuracy = newNode.evaluation
+                    nextNode = newNode
+            print("")
+            if highestAccuracy >= currAccuracy:
+                f = []
+                for j in range(len(nextNode.currFeatures)):
+                    f.append(nextNode.currFeatures[j]+1)
+                print("Feature set " + f.__str__() + " was best, accuracy is " + str(highestAccuracy) + "%\n")
+                last = node
+                node = nextNode
+                currAccuracy = highestAccuracy
+                if len(node.remainingFeatures) == 0:
+                    f = []
+                    for j in range(len(node.currFeatures)):
+                        f.append(node.currFeatures[j]+1)
+                    print("Using all features, ie " + f.__str__() + ", accuracy is " + str(node.evaluation) + "%\n")
+                    if node.evaluation >= currAccuracy:
+                        f = []
+                        for j in range(len(node.currFeatures)):
+                            f.append(node.currFeatures[j]+1)
+                        print("Feature set " + f.__str__() + " was best, accuracy is " + str(node.evaluation) + "%\n")
+                    else:
+                        node = last
+                        f = []
+                        for j in range(len(node.currFeatures)):
+                            f.append(node.currFeatures[j]+1)
+                        print ("(Warning, selecting best feature set, " + f.__str__() + ", with accuracy " + str(node.evaluation) + "%" + " will decrease accuracy from " + str(currAccuracy) + "%!)")
+            else:
+                f = []
+                for j in range(len(nextNode.currFeatures)):
+                    f.append(nextNode.currFeatures[j]+1)
+                print ("(Warning, selecting best feature set, " + f.__str__() + ", with accuracy " + str(highestAccuracy) + "%" + " will decrease accuracy from " + str(currAccuracy) + "%!)")
+                break
+        f = []
+        for j in range(len(node.currFeatures)):
+            f.append(node.currFeatures[j]+1)
+        print("Finished search!!! The best feature subset is " + f.__str__() + " with an accuracy of " + str(node.evaluation) + "%")
+
+
 
     def printTree(self):
         levels = []

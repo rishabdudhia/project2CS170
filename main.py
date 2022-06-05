@@ -1,4 +1,3 @@
-from operator import ne
 from tree import Tree
 from data import Data
 from classifier import Classifier
@@ -18,9 +17,9 @@ for i in range(data.numFeatures):
 
 nearestNeighbor = Classifier(data)
 validator = Validator(nearestNeighbor, data)
-accuracy = validator.validate([0, 14, 26])
-print(accuracy)
-# tree = Tree(features, validator)
+# accuracy = validator.validate([0, 14, 26])
+# print(accuracy)
+tree = Tree(features, validator)
 
 
 # tree.printTree()
