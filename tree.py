@@ -5,67 +5,80 @@ from queue import Queue
 
 from validator import Validator
 
-class Tree:
-    
-    def expandNode(self):
-        if len(self.toExpand) == 0:
-            return
+class Tree: 
 
-        node: Node = self.toExpand[0]
-        del self.toExpand[0]
-        
-        if len(node.remainingFeatures) != 0:
-            for i in range(len(node.remainingFeatures)):
-                curr = []
-                for j in node.currFeatures:
-                    curr.append(j)
-                curr.append(node.remainingFeatures[i])
-                rem = []
-                for j in range(len(node.remainingFeatures)):
-                    if j == i: continue
-                    rem.append(node.remainingFeatures[j])
-                newNode = Node(curr, rem, node, self.validator)
-                found = 0
-                for j in range(len(self.tree)):
-                    if self.tree[j].currFeatures == newNode.currFeatures and self.tree[j].remainingFeatures == newNode.remainingFeatures:
-                        found = 1
-                        node.children.append(self.tree[j])
-                        self.tree[j].parent.append(node)
-                        break
-                if found == 0:
-                    for j in range(len(self.toExpand)):
-                        if self.toExpand[j].currFeatures == newNode.currFeatures and self.toExpand[j].remainingFeatures == newNode.remainingFeatures:
-                            found = 1
-                            node.children.append(self.toExpand[j])
-                            self.toExpand[j].parent.append(node)
-                if found == 0:
-                    node.children.append(newNode)
-                    self.toExpand.append(newNode)
-                if newNode.depth > self.depth:
-                    self.depth = newNode.depth
-                
-
-        if self.root == None and (len(node.parent) == 0):
-            self.root = node      
-        self.tree.append(node)
-        self.expandNode()
-        return
-        
-            
-
-    def __init__(self, features: list, validator: Validator):
+    def __init__(self, features: list, validator: Validator, alg):
         self.validator = validator
         self.features = features
-        # self.selected = []
-        # self.toExpand = []
         self.depth = 0
-        # self.tree = []
-        # self.root = None
-        initial = Node([], self.features, 0, self.validator)
-        # self.toExpand.append(initial)
-        # self.expandNode()
-        # self.end = self.tree[-1]
-        self.greedyBuild(initial)
+        if alg == 1:
+            initial = Node([], self.features, 0, self.validator)
+            self.greedyBuild(initial)
+        else:
+            end = Node(self.features, [], 0, self.validator)
+            self.backwardsBuild(end)
+
+    def backwardsBuild(self, node: Node):
+        currAccuracy = node.evaluation
+        f = []
+        for j in range(len(node.currFeatures)):
+            f.append(node.currFeatures[j]+1)
+        print("Using all features, ie " + f.__str__() + ", accuracy is " + str(currAccuracy) + "%\n")
+        while len(node.currFeatures) != 0:
+            highestAccuracy = -1
+            nextNode: Node = None
+            for i in range(len(node.currFeatures)):
+                rem = []
+                for j in node.remainingFeatures:
+                    rem.append(j)
+                rem.append(node.currFeatures[i])
+                curr = []
+                for j in range(len(node.currFeatures)):
+                    if j == i: continue
+                    curr.append(node.currFeatures[j])
+                newNode = Node(curr, rem, node, self.validator)
+                f = []
+                for j in range(len(newNode.currFeatures)):
+                    f.append(newNode.currFeatures[j]+1)
+                print("Using feature(s) " + f.__str__() + " accuracy is " + str(newNode.evaluation) + "%")
+                if newNode.evaluation > highestAccuracy:
+                    highestAccuracy = newNode.evaluation
+                    nextNode = newNode
+            print("")
+            if highestAccuracy >= currAccuracy:
+                f = []
+                for j in range(len(nextNode.currFeatures)):
+                    f.append(nextNode.currFeatures[j]+1)
+                print("Feature set " + f.__str__() + " was best, accuracy is " + str(highestAccuracy) + "%\n")
+                last = node
+                node = nextNode
+                currAccuracy = highestAccuracy
+                if len(node.remainingFeatures) == 0:
+                    f = []
+                    for j in range(len(node.currFeatures)):
+                        f.append(node.currFeatures[j]+1)
+                    print("Using all features, ie " + f.__str__() + ", accuracy is " + str(node.evaluation) + "%\n")
+                    if node.evaluation >= currAccuracy:
+                        f = []
+                        for j in range(len(node.currFeatures)):
+                            f.append(node.currFeatures[j]+1)
+                        print("Feature set " + f.__str__() + " was best, accuracy is " + str(node.evaluation) + "%\n")
+                    else:
+                        node = last
+                        f = []
+                        for j in range(len(node.currFeatures)):
+                            f.append(node.currFeatures[j]+1)
+                        print ("(Warning, selecting best feature set, " + f.__str__() + ", with accuracy " + str(node.evaluation) + "%" + " will decrease accuracy from " + str(currAccuracy) + "%!)")
+            else:
+                f = []
+                for j in range(len(nextNode.currFeatures)):
+                    f.append(nextNode.currFeatures[j]+1)
+                print ("(Warning, selecting best feature set, " + f.__str__() + ", with accuracy " + str(highestAccuracy) + "%" + " will decrease accuracy from " + str(currAccuracy) + "%!)")
+                break
+        f = []
+        for j in range(len(node.currFeatures)):
+            f.append(node.currFeatures[j]+1)
+        print("Finished search!!! The best feature subset is " + f.__str__() + " with an accuracy of " + str(node.evaluation) + "%")
 
     def greedyBuild(self, node: Node):
         currAccuracy = node.evaluation
@@ -151,71 +164,3 @@ class Tree:
                         print("        cp: " + b.currFeatures.__str__())
 
             k += 1
-
-    def ForwardSelection(self):
-        highest = -1
-        selected = {}
-        
-        node: Node = self.tree[0]
-        print("Using no features, ie " + node.currFeatures.__str__() + ", accuracy is " + str(node.evaluation) + "%\n")
-        highest = node.evaluation
-        selected[highest] = node.currFeatures
-        while len(node.children) != 0:
-            maxVal = -1
-            maxCurr = []
-            maxNode = None
-            for i in node.children:
-                if i.evaluation > maxVal:
-                    maxVal = i.evaluation
-                    maxCurr = i.currFeatures
-                    maxNode = i
-                print("Using feature(s) " + i.currFeatures.__str__() + " accuracy is " + str(i.evaluation) + "%")
-            selected[maxVal] = maxCurr
-            if maxVal > highest:
-                highest = maxVal
-            print("\n")
-            if maxVal < highest:
-                print ("(Warning, selecting best feature set, " + maxCurr.__str__() + ", with accuracy " + str(maxVal) + "%" + " will decrease accuracy from " + str(highest) + "%!)")
-            print("Feature set " + maxCurr.__str__() + " was best, accuracy is " + str(maxVal) + "%\n")    
-            node = maxNode
-
-        return (highest, selected[highest])
-    
-    def BackwardsElimination(self):
-        highest = -1
-        selected = {}
-        
-        node: Node = self.tree[-1]
-        print("Using all features, ie " + node.currFeatures.__str__() + ", accuracy is " + str(node.evaluation) + "%\n")
-        highest = node.evaluation
-        selected[highest] = node.currFeatures
-        while len(node.parent) != 0:
-            maxVal = -1
-            maxCurr = []
-            maxNode = None
-            for i in node.parent:
-                if i.evaluation > maxVal:
-                    maxVal = i.evaluation
-                    maxCurr = i.currFeatures
-                    maxNode = i
-                print("Using feature(s) " + i.currFeatures.__str__() + " accuracy is " + str(i.evaluation) + "%")
-            selected[maxVal] = maxCurr
-            if maxVal > highest:
-                highest = maxVal
-            print("\n")
-            if maxVal < highest:
-                print ("(Warning, selecting best feature set, " + maxCurr.__str__() + ", with accuracy " + str(maxVal) + "%" + " will decrease accuracy from " + str(highest) + "%!)")
-            print("Feature set " + maxCurr.__str__() + " was best, accuracy is " + str(maxVal) + "%\n")    
-            node = maxNode
-
-        return (highest, selected[highest])
-    
-    def solve(self, alg):
-        print("\nBeginning Search\n")
-        solution = 0
-        if alg == 1:
-            solution = self.ForwardSelection()
-        else:
-            solution = self.BackwardsElimination()
-
-        print("Finished search!!! The best feature subset is " + solution[1].__str__() + " with an accuracy of " + str(solution[0]) + "%") 
