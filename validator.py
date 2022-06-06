@@ -3,8 +3,8 @@ from data import Data
 
 class Validator:
 
-    def __init__(self, nearestNeighbor: Classifier, data: Data):
-        self.data = data.data
+    def __init__(self, nearestNeighbor: Classifier):
+        self.data = nearestNeighbor.allData.data
         self.classifier = nearestNeighbor
 
     def validate(self, currFeatures: list):

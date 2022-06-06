@@ -18,7 +18,7 @@ for i in range(data.numFeatures):
 # alg = int(input())
 
 nearestNeighbor = Classifier(data)
-validator = Validator(nearestNeighbor, data)
+validator = Validator(nearestNeighbor)
 # accuracy = validator.validate([0, 14, 26])
 # print(accuracy)
 print("Please enter the algorithm you would like to run:")
