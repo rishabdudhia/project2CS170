@@ -2,6 +2,31 @@ import json
 import statistics
 
 class Data:
+
+    def __init__(self, file):
+        t = self.convert(file)
+        self.data:list = t[0]
+        self.numFeatures = t[1]
+        print("This dataset has " + str(self.numFeatures) + " features (not including the class attribute), with " + str(len(self.data)) + " instances.\n")
+        self.meanFeatures = []
+        self.stdFeatures = []
+        print("Please wait while I normalize the data...")
+        self.normalize()
+        print("Done!")
+        self.defaultRate = -1
+        c1 = 0
+        c2 = 0
+        for i in range(len(self.data)):
+            if self.data[i][0] == 1.0:
+                c1 += 1
+            else:
+                c2+= 1
+        
+        if c1 > c2:
+            self.defaultRate = c1 / len(self.data)
+        else:
+            self.defaultRate = c2 / len(self.data)
+
     def convert(self, file):
         file = "./data/" + file
         dict = []
@@ -61,25 +86,4 @@ class Data:
                 self.data[i][j] = normalized[j-1][i]
 
 
-    def __init__(self, file):
-        t = self.convert(file)
-        self.data:list = t[0]
-        self.numFeatures = t[1]
-        self.meanFeatures = []
-        self.stdFeatures = []
-        print("Please wait while I normalize the data...")
-        self.normalize()
-        print("Done!")
-        self.defaultRate = -1
-        c1 = 0
-        c2 = 0
-        for i in range(len(self.data)):
-            if self.data[i][0] == 1.0:
-                c1 += 1
-            else:
-                c2+= 1
-        
-        if c1 > c2:
-            self.defaultRate = c1 / len(self.data)
-        else:
-            self.defaultRate = c2 / len(self.data)
+    

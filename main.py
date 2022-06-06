@@ -4,9 +4,10 @@ from classifier import Classifier
 from validator import Validator
 import time
 
-print ("Welcome to Rishab Dudhia's Feature Search Algorithm")
+print ("Welcome to Rishab Dudhia's Feature Search Algorithm\n")
 print ("Type in the name of the file to test: ")
 file = input()
+print("")
 data = Data(file)
 features = []
 for i in range(data.numFeatures):
@@ -21,7 +22,7 @@ nearestNeighbor = Classifier(data)
 validator = Validator(nearestNeighbor)
 # accuracy = validator.validate([0, 14, 26])
 # print(accuracy)
-print("Please enter the algorithm you would like to run:")
+print("\nPlease enter the algorithm you would like to run:")
 print("1. Forward Selection")
 print("2. Backwards Elimination")
 
@@ -35,6 +36,8 @@ while alg == 0:
     else:
         print("Sorry please select between options 1 and 2")
         alg = 0
+
+print("")
 test = [0,1,2,3,4,5,6,7,8,9]
 before = time.perf_counter()
 tree = Tree(features, validator, alg)
